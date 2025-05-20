@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
+import Slider from "react-slick";
+import axios from "axios";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-
-import axios from "axios";
 
 import Cards from "./Cards";
+
 function Freebook() {
   const [book, setBook] = useState([]);
+
   useEffect(() => {
     const getBook = async () => {
       try {
         const res = await axios.get("http://localhost:4001/book");
-
-        const data = res.data.filter((data) => data.category === "Free");
-        console.log(data);
-        setBook(data);
+        const filtered = res.data.filter((item) => item.category === "Free");
+        setBook(filtered);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching books:", error);
       }
     };
+
     getBook();
   }, []);
 
-  var settings = {
+  const settings = {
     dots: true,
     infinite: false,
     speed: 500,
@@ -42,11 +42,10 @@ function Freebook() {
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 768,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
-          initialSlide: 2,
         },
       },
       {
@@ -58,26 +57,25 @@ function Freebook() {
       },
     ],
   };
-  return (
-    <>
-      <div className=" max-w-screen-2xl container mx-auto md:px-20 px-4">
-        <div>
-          <h1 className="font-semibold text-xl pb-2">Free Offered Courses</h1>
-          <p>
-            "A reader lives a thousand lives before he dies. The man who never reads lives only one."
-              <p className="display flex justify-self-center">— George R.R. Martin</p>
-          </p>
-        </div>
 
-        <div>
-          <Slider {...settings}>
-            {book.map((item) => (
-              <Cards item={item} key={item.id} />
-            ))}
-          </Slider>
-        </div>
+  return (
+    <div className="max-w-screen-2xl mx-auto px-4 md:px-20 py-10">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Free Offered Courses</h1>
+        <p className="text-gray-600 text-base leading-relaxed">
+          "A reader lives a thousand lives before he dies. The man who never reads lives only one."
+          <br />
+          <span className="text-sm text-gray-500 italic">— George R.R. Martin</span>
+        </p>
       </div>
-    </>
+
+      <Slider {...settings}>
+        {book.map((item) => (
+          <Cards item={item} key={item.id} />
+        ))}
+      </Slider>
+    </div>
   );
 }
+
 export default Freebook;
